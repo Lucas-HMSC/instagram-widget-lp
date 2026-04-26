@@ -37,7 +37,16 @@
   <nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
     <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
       <a href="index.html"><img src="logo.svg" alt="Instagram Widget by Luck" class="h-8" /></a>
-      <div class="flex items-center gap-6 text-sm text-gray-600">
+
+      <!-- Hamburger button (mobile only) -->
+      <button id="nav-toggle" class="md:hidden flex flex-col justify-center items-center w-8 h-8 p-1 gap-0 relative" aria-label="Abrir menu">
+        <span id="bar1" class="block w-6 h-0.5 bg-gray-700 absolute transition-all duration-300 origin-center" style="transform: translateY(-5px)"></span>
+        <span id="bar2" class="block w-6 h-0.5 bg-gray-700 absolute transition-all duration-300 origin-center"></span>
+        <span id="bar3" class="block w-6 h-0.5 bg-gray-700 absolute transition-all duration-300 origin-center" style="transform: translateY(5px)"></span>
+      </button>
+
+      <!-- Desktop links -->
+      <div class="hidden md:flex items-center gap-6 text-sm text-gray-600">
         <a href="#como-funciona" class="hover:text-gray-900 transition-colors">Como funciona</a>
         <a href="#recursos" class="hover:text-gray-900 transition-colors">Recursos</a>
         <a href="#precos" class="hover:text-gray-900 transition-colors">Preços</a>
@@ -47,7 +56,49 @@
         </a>
       </div>
     </div>
+
+    <!-- Mobile menu -->
+    <div id="nav-menu" class="hidden md:hidden border-t border-gray-100 bg-white/95 px-6 py-4 flex flex-col gap-4 text-sm text-gray-600">
+      <a href="#como-funciona" class="hover:text-gray-900 transition-colors">Como funciona</a>
+      <a href="#recursos" class="hover:text-gray-900 transition-colors">Recursos</a>
+      <a href="#precos" class="hover:text-gray-900 transition-colors">Preços</a>
+      <a href="mailto:contato@luck.app.br"
+        class="gradient-bg text-white px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity text-center">
+        Falar com a equipe
+      </a>
+    </div>
   </nav>
+
+  <script>
+    const toggle = document.getElementById('nav-toggle');
+    const menu = document.getElementById('nav-menu');
+    const bar1 = document.getElementById('bar1');
+    const bar2 = document.getElementById('bar2');
+    const bar3 = document.getElementById('bar3');
+    let open = false;
+
+    function setMenuOpen(state) {
+      open = state;
+      if (open) {
+        menu.classList.remove('hidden');
+        bar1.style.transform = 'rotate(45deg)';
+        bar2.style.opacity = '0';
+        bar3.style.transform = 'rotate(-45deg)';
+        toggle.setAttribute('aria-label', 'Fechar menu');
+      } else {
+        menu.classList.add('hidden');
+        bar1.style.transform = 'translateY(-5px)';
+        bar2.style.opacity = '1';
+        bar3.style.transform = 'translateY(5px)';
+        toggle.setAttribute('aria-label', 'Abrir menu');
+      }
+    }
+
+    toggle.addEventListener('click', function () { setMenuOpen(!open); });
+    document.querySelectorAll('#nav-menu a').forEach(function (link) {
+      link.addEventListener('click', function () { setMenuOpen(false); });
+    });
+  </script>
 
   <!-- Hero -->
   <section class="pt-32 pb-24 px-6">
