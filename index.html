@@ -184,6 +184,97 @@
     </div>
   </section>
 
+  <!-- Demo ao vivo -->
+  <section id="demo" class="py-24 px-6">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-center mb-12">
+        <div class="inline-flex items-center gap-2 bg-sky-50 text-sky-700 px-4 py-2 rounded-full text-sm font-medium mb-6">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-sky-500"></span>
+          </span>
+          Feed ao vivo
+        </div>
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Veja o resultado na prática</h2>
+        <p class="text-gray-500 text-lg max-w-2xl mx-auto">Os cards abaixo são carregados em tempo real pela nossa API com um simples <code class="bg-gray-100 border border-gray-200 px-1.5 py-0.5 rounded">fetch()</code>.</p>
+      </div>
+
+      <div id="ig-feed-grid" class="grid grid-cols-1 sm:grid-cols-3 gap-4"></div>
+
+      <div id="ig-auth-notice" class="hidden mt-8 bg-amber-50 border border-amber-200 rounded-2xl p-5 flex items-start gap-4">
+        <div class="w-9 h-9 bg-amber-100 rounded-xl flex items-center justify-center flex-shrink-0">
+          <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+        </div>
+        <div>
+          <p class="text-amber-900 font-semibold text-sm">Autenticação pendente</p>
+          <p class="text-amber-700 text-sm mt-1 leading-relaxed">Este cliente ainda não conectou a conta do Instagram. Após a autenticação, o feed real substituirá os cards de exemplo automaticamente.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    (function () {
+      var FEED_URL = 'https://luck.app.br/api/v1/widget/feed/33848ce9-02c3-4767-bddc-f57e939f27af?limit=3';
+
+      function makePlaceholder() {
+        return '<div class="rounded-2xl overflow-hidden border border-gray-200 bg-white">' +
+          '<div class="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 flex flex-col items-center justify-center gap-3">' +
+          '<div class="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow border border-gray-100">' +
+          '<svg class="w-7 h-7 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+          '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />' +
+          '</svg>' +
+          '</div>' +
+          '<p class="text-gray-400 text-xs font-medium text-center leading-snug">Aguardando<br>autenticação</p>' +
+          '</div>' +
+          '<div class="p-4 space-y-2.5">' +
+          '<div class="h-2.5 bg-gray-100 rounded-full w-full animate-pulse"></div>' +
+          '<div class="h-2.5 bg-gray-100 rounded-full w-4/5 animate-pulse"></div>' +
+          '<div class="h-2.5 bg-gray-100 rounded-full w-2/3 animate-pulse"></div>' +
+          '</div>' +
+          '</div>';
+      }
+
+      function makePostCard(post) {
+        var src = post.media_type === 'VIDEO' ? (post.thumbnail_url || post.media_url) : post.media_url;
+        var caption = (post.caption || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        return '<a href="' + post.permalink + '" target="_blank" rel="noopener noreferrer" ' +
+          'class="rounded-2xl overflow-hidden border border-gray-100 bg-white block group card-hover">' +
+          '<div class="aspect-square overflow-hidden bg-gray-100">' +
+          '<img src="' + src + '" alt="" loading="lazy" ' +
+          'class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />' +
+          '</div>' +
+          '<div class="p-4">' +
+          '<p class="text-xs text-gray-500 leading-relaxed" style="display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">' + caption + '</p>' +
+          '</div>' +
+          '</a>';
+      }
+
+      var grid = document.getElementById('ig-feed-grid');
+      var notice = document.getElementById('ig-auth-notice');
+
+      grid.innerHTML = makePlaceholder() + makePlaceholder() + makePlaceholder();
+
+      fetch(FEED_URL)
+        .then(function (res) {
+          return res.json().then(function (body) { return { ok: res.ok, body: body }; });
+        })
+        .then(function (r) {
+          var posts = r.body && r.body.data;
+          if (r.ok && Array.isArray(posts) && posts.length > 0) {
+            grid.innerHTML = posts.map(makePostCard).join('');
+          } else {
+            notice.classList.remove('hidden');
+          }
+        })
+        .catch(function () {
+          notice.classList.remove('hidden');
+        });
+    })();
+  </script>
+
   <!-- Recursos -->
   <section id="recursos" class="py-24 px-6">
     <div class="max-w-6xl mx-auto">
