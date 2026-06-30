@@ -2,444 +2,426 @@
 <html lang="pt-BR">
 
 <head>
-  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Instagram Widget by Luck — Feed do Instagram no seu site</title>
+  <title>Instagram Widget by Luck — Feed do Instagram em JSON puro</title>
   <meta name="description"
-    content="Exiba o feed do Instagram dos seus clientes em qualquer site com uma simples chamada de API. Multi-tenant, cache automático e renovação de tokens." />
+    content="API multi-tenant que entrega o feed do Instagram dos seus clientes em JSON. Sem SDK, sem iframe, sem layout imposto. Cache automático, renovação de tokens e CORS por domínio." />
+  <meta name="theme-color" content="#ffffff" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+
+  <meta property="og:title" content="Instagram Widget by Luck — Feed do Instagram em JSON puro" />
+  <meta property="og:description"
+    content="Uma API que devolve os posts do Instagram dos seus clientes em JSON. Você monta o HTML como quiser." />
+  <meta property="og:type" content="website" />
+
+  <!-- Apply theme + js flag before paint to avoid any flash -->
+  <script>
+    (function () {
+      var d = document.documentElement;
+      d.classList.add("js");
+      try {
+        var s = localStorage.getItem("theme");
+        var dark = s ? s === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+        if (dark) {
+          d.classList.add("dark");
+          var m = document.querySelector('meta[name="theme-color"]');
+          if (m) m.setAttribute("content", "#1f2a30");
+        }
+      } catch (e) {}
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400..700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="assets/theme.css" />
+
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    .gradient-text {
-      background: linear-gradient(135deg, #20ACE2, #003651);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .gradient-bg {
-      background: linear-gradient(135deg, #20ACE2, #003651);
-    }
-
-    .card-hover {
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .card-hover:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-    }
-  </style>
+  <script src="assets/tailwind.config.js"></script>
 </head>
 
-<body class="bg-white text-gray-800 antialiased">
+<body>
 
-  <!-- Nav -->
-  <nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
-    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-      <a href="index.html"><img src="logo.svg" alt="Instagram Widget by Luck" class="h-8" /></a>
+  <!-- ============================================ Header -->
+  <header class="site-header">
+    <div class="wrap flex items-center justify-between h-16">
+      <a href="index.html" class="flex items-center shrink-0" aria-label="Instagram Widget by Luck — início">
+        <img src="logo.svg" alt="Instagram Widget by Luck" class="h-7 w-auto" />
+      </a>
 
-      <!-- Hamburger button (mobile only) -->
-      <button id="nav-toggle" class="md:hidden flex flex-col justify-center items-center w-8 h-8 p-1 gap-0 relative" aria-label="Abrir menu">
-        <span id="bar1" class="block w-6 h-0.5 bg-gray-700 absolute transition-all duration-300 origin-center" style="transform: translateY(-5px)"></span>
-        <span id="bar2" class="block w-6 h-0.5 bg-gray-700 absolute transition-all duration-300 origin-center"></span>
-        <span id="bar3" class="block w-6 h-0.5 bg-gray-700 absolute transition-all duration-300 origin-center" style="transform: translateY(5px)"></span>
-      </button>
+      <nav class="hidden md:flex items-center gap-8" aria-label="Navegação principal">
+        <a href="#api" class="nav-link">API</a>
+        <a href="#como-funciona" class="nav-link">Como funciona</a>
+        <a href="#recursos" class="nav-link">Recursos</a>
+        <a href="#precos" class="nav-link">Preços</a>
+      </nav>
 
-      <!-- Desktop links -->
-      <div class="hidden md:flex items-center gap-6 text-sm text-gray-600">
-        <a href="#como-funciona" class="hover:text-gray-900 transition-colors">Como funciona</a>
-        <a href="#recursos" class="hover:text-gray-900 transition-colors">Recursos</a>
-        <a href="#precos" class="hover:text-gray-900 transition-colors">Preços</a>
-        <a href="mailto:contato@luck.app.br"
-          class="gradient-bg text-white px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity">
+      <div class="flex items-center gap-3">
+        <button type="button" class="icon-btn" data-theme-toggle aria-label="Mudar tema">
+          <svg class="moon w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
+          </svg>
+          <svg class="sun w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+          </svg>
+        </button>
+
+        <a href="mailto:contato@luck.app.br" class="btn btn-primary hidden sm:inline-flex !py-2.5 !px-4 text-sm">
           Falar com a equipe
         </a>
+
+        <button id="nav-toggle" type="button" class="icon-btn md:hidden" aria-label="Abrir menu" aria-expanded="false" aria-controls="nav-menu">
+          <span class="hamburger" aria-hidden="true"><span></span><span></span><span></span></span>
+        </button>
       </div>
     </div>
 
     <!-- Mobile menu -->
-    <div id="nav-menu" class="hidden md:hidden border-t border-gray-100 bg-white/95 px-6 py-4 flex flex-col gap-4 text-sm text-gray-600">
-      <a href="#como-funciona" class="hover:text-gray-900 transition-colors">Como funciona</a>
-      <a href="#recursos" class="hover:text-gray-900 transition-colors">Recursos</a>
-      <a href="#precos" class="hover:text-gray-900 transition-colors">Preços</a>
-      <a href="mailto:contato@luck.app.br"
-        class="gradient-bg text-white px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity text-center">
-        Falar com a equipe
-      </a>
+    <div id="nav-menu" class="hidden md:hidden border-t border-line">
+      <nav class="wrap py-4 flex flex-col gap-1" aria-label="Navegação móvel">
+        <a href="#api" class="nav-link py-2">API</a>
+        <a href="#como-funciona" class="nav-link py-2">Como funciona</a>
+        <a href="#recursos" class="nav-link py-2">Recursos</a>
+        <a href="#precos" class="nav-link py-2">Preços</a>
+        <a href="mailto:contato@luck.app.br" class="btn btn-primary mt-2">Falar com a equipe</a>
+      </nav>
     </div>
-  </nav>
+  </header>
 
-  <script>
-    const toggle = document.getElementById('nav-toggle');
-    const menu = document.getElementById('nav-menu');
-    const bar1 = document.getElementById('bar1');
-    const bar2 = document.getElementById('bar2');
-    const bar3 = document.getElementById('bar3');
-    let open = false;
+  <main>
 
-    function setMenuOpen(state) {
-      open = state;
-      if (open) {
-        menu.classList.remove('hidden');
-        bar1.style.transform = 'rotate(45deg)';
-        bar2.style.opacity = '0';
-        bar3.style.transform = 'rotate(-45deg)';
-        toggle.setAttribute('aria-label', 'Fechar menu');
-      } else {
-        menu.classList.add('hidden');
-        bar1.style.transform = 'translateY(-5px)';
-        bar2.style.opacity = '1';
-        bar3.style.transform = 'translateY(5px)';
-        toggle.setAttribute('aria-label', 'Abrir menu');
-      }
-    }
+    <!-- ============================================ Hero -->
+    <section class="relative overflow-hidden" data-hero>
+      <div class="wrap pt-20 pb-16 md:pt-28 md:pb-24 max-w-3xl">
+        <span class="pill hero-line">
+          <span class="w-1.5 h-1.5 rounded-full bg-brand"></span>
+          API de feed do Instagram
+        </span>
 
-    toggle.addEventListener('click', function () { setMenuOpen(!open); });
-    document.querySelectorAll('#nav-menu a').forEach(function (link) {
-      link.addEventListener('click', function () { setMenuOpen(false); });
-    });
-  </script>
+        <h1 class="hero-line mt-6 text-[clamp(2.5rem,6vw,4.25rem)] leading-[1.04] font-extrabold">
+          O feed do Instagram dos seus clientes,
+          <span class="relative inline-block whitespace-nowrap text-ocean">
+            em JSON puro<span class="accent-rule absolute -bottom-1 left-0"></span>
+          </span>.
+        </h1>
 
-  <!-- Hero -->
-  <section class="pt-32 pb-24 px-6">
-    <div class="max-w-4xl mx-auto text-center">
-      <div
-        class="inline-flex items-center gap-2 bg-sky-50 text-sky-700 px-4 py-2 rounded-full text-sm font-medium mb-6">
-        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-          <path
-            d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-        </svg>
-        Feed do Instagram via API
-      </div>
-      <h1 class="text-5xl md:text-6xl font-bold text-gray-900 leading-tight mb-6">
-        Exiba o feed do Instagram<br />
-        <span class="gradient-text">diretamente no seu site</span>
-      </h1>
-      <p class="text-xl text-gray-500 max-w-2xl mx-auto mb-10 leading-relaxed">
-        Uma API simples que entrega os posts do Instagram em JSON. Sem SDK, sem iframe, sem layout imposto. Você monta o
-        HTML como quiser.
-      </p>
-      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-        <a href="mailto:contato@luck.app.br"
-          class="gradient-bg text-white px-8 py-4 rounded-xl font-semibold text-lg hover:opacity-90 transition-opacity shadow-lg">
-          Começar agora
-        </a>
-        <a href="#como-funciona"
-          class="text-gray-600 px-8 py-4 rounded-xl font-semibold text-lg border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all">
-          Ver como funciona
-        </a>
-      </div>
-    </div>
-  </section>
+        <p class="hero-line mt-6 text-lg md:text-xl text-ink-soft max-w-2xl leading-relaxed">
+          Uma chamada de <code class="mono text-ocean">fetch()</code> devolve os posts do Instagram da conta
+          conectada. Sem SDK, sem iframe, sem layout imposto — você monta o HTML exatamente como o design pede.
+        </p>
 
-  <!-- Code preview -->
-  <section class="py-12 px-6 bg-gray-950">
-    <div class="max-w-3xl mx-auto">
-      <p class="text-gray-500 text-sm mb-3 font-mono">Exemplo de uso da API:</p>
-      <pre
-        class="text-sm md:text-base font-mono leading-relaxed overflow-x-auto"><code><span class="text-blue-400">const</span> <span class="text-white">res</span> <span class="text-gray-400">=</span> <span class="text-yellow-400">await</span> <span class="text-white">fetch</span><span class="text-gray-400">(</span>
-  <span class="text-green-400">'https://luck.app.br/api/v1/widget/feed/SEU_CLIENT_ID?limit=12'</span>
-<span class="text-gray-400">);</span>
-<span class="text-blue-400">const</span> <span class="text-gray-400">{</span> <span class="text-white">data</span> <span class="text-gray-400">}</span> <span class="text-gray-400">=</span> <span class="text-yellow-400">await</span> <span class="text-white">res</span><span class="text-gray-400">.</span><span class="text-white">json</span><span class="text-gray-400">();</span>
-
-<span class="text-gray-500">// data = [{ id, caption, media_type, media_url, permalink, timestamp }, ...]</span>
-<span class="text-white">data</span><span class="text-gray-400">.</span><span class="text-white">forEach</span><span class="text-gray-400">(</span><span class="text-white">post</span> <span class="text-gray-400">=></span> <span class="text-gray-500">/* monte o HTML como quiser */</span><span class="text-gray-400">);</span></code></pre>
-    </div>
-  </section>
-
-  <!-- Como funciona -->
-  <section id="como-funciona" class="py-24 px-6 bg-gray-50">
-    <div class="max-w-6xl mx-auto">
-      <div class="text-center mb-16">
-        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Como funciona</h2>
-        <p class="text-gray-500 text-lg">Três passos. Sem complicação.</p>
-      </div>
-      <div class="grid md:grid-cols-3 gap-8">
-        <div class="bg-white p-8 rounded-2xl shadow-sm card-hover">
-          <div
-            class="w-12 h-12 gradient-bg rounded-xl flex items-center justify-center text-white font-bold text-xl mb-6">
-            1</div>
-          <h3 class="text-xl font-bold mb-3">Conecte a conta</h3>
-          <p class="text-gray-500 leading-relaxed">Você cadastra o cliente e envia um link seguro. Ele clica, autoriza o
-            Instagram em segundos, e a conexão fica salva.</p>
+        <div class="hero-line mt-9 flex flex-col sm:flex-row gap-3">
+          <a href="mailto:contato@luck.app.br" class="btn btn-primary text-base">Começar agora</a>
+          <a href="#api" class="btn btn-ghost text-base">Ver a API</a>
         </div>
-        <div class="bg-white p-8 rounded-2xl shadow-sm card-hover">
-          <div
-            class="w-12 h-12 gradient-bg rounded-xl flex items-center justify-center text-white font-bold text-xl mb-6">
-            2</div>
-          <h3 class="text-xl font-bold mb-3">Configure o domínio</h3>
-          <p class="text-gray-500 leading-relaxed">Informe o domínio do site do cliente. Nossa API só responde para
-            origens autorizadas — nenhum outro site consegue usar o token do seu cliente.</p>
-        </div>
-        <div class="bg-white p-8 rounded-2xl shadow-sm card-hover">
-          <div
-            class="w-12 h-12 gradient-bg rounded-xl flex items-center justify-center text-white font-bold text-xl mb-6">
-            3</div>
-          <h3 class="text-xl font-bold mb-3">Consuma o feed</h3>
-          <p class="text-gray-500 leading-relaxed">Um <code class="bg-gray-100 px-1 rounded text-sm">fetch()</code>
-            retorna o JSON com os posts. Monte o layout que quiser, sem amarrações de CSS ou HTML impostos pela
-            ferramenta.</p>
+
+        <p class="hero-line mt-8 text-sm text-ink-mute mono">
+          cache Redis&nbsp;·&nbsp;renovação automática de tokens&nbsp;·&nbsp;CORS por domínio
+        </p>
+      </div>
+    </section>
+
+    <!-- ============================================ API band (coal) -->
+    <section id="api" class="coal coal-grain scroll-mt-16">
+      <div class="wrap py-16 md:py-24">
+        <div class="grid lg:grid-cols-[1fr_1.15fr] gap-10 lg:gap-16 items-center">
+
+          <div class="reveal max-w-md">
+            <span class="pill" style="color: oklch(var(--brand)); background-color: oklch(var(--brand) / .14); border-color: oklch(var(--brand) / .3);">
+              <span class="w-1.5 h-1.5 rounded-full bg-brand"></span>
+              GET&nbsp;/widget/feed
+            </span>
+            <h2 class="mt-5 text-[clamp(1.9rem,3.4vw,2.75rem)] leading-tight font-bold">
+              Um endpoint. Um JSON. Zero amarras.
+            </h2>
+            <p class="mt-4 text-base md:text-lg leading-relaxed" style="color: oklch(var(--ink-rev) / .72);">
+              Você recebe um array de posts com tudo que precisa para renderizar — <span class="mono" style="color: oklch(var(--brand));">id</span>,
+              <span class="mono" style="color: oklch(var(--brand));">caption</span>,
+              <span class="mono" style="color: oklch(var(--brand));">media_url</span>,
+              <span class="mono" style="color: oklch(var(--brand));">permalink</span> e
+              <span class="mono" style="color: oklch(var(--brand));">timestamp</span>. O resto é com o seu CSS.
+            </p>
+          </div>
+
+          <!-- code window -->
+          <div class="reveal min-w-0" data-delay="1">
+            <div class="rounded-2xl overflow-hidden border" style="border-color: oklch(var(--ink-rev) / .12); background-color: oklch(var(--coal-2) / .55);">
+              <div class="flex items-center gap-2 px-4 py-3 border-b" style="border-color: oklch(var(--ink-rev) / .1);">
+                <span class="w-3 h-3 rounded-full" style="background: oklch(var(--ink-rev) / .2);"></span>
+                <span class="w-3 h-3 rounded-full" style="background: oklch(var(--ink-rev) / .2);"></span>
+                <span class="w-3 h-3 rounded-full" style="background: oklch(var(--ink-rev) / .2);"></span>
+                <span class="ml-2 mono text-xs" style="color: oklch(var(--ink-rev) / .5);">feed.js</span>
+              </div>
+              <pre class="text-[13px] md:text-sm leading-relaxed overflow-x-auto p-5"><code><span style="color:oklch(var(--brand))">const</span> res <span style="color:oklch(var(--ink-rev) / .55)">=</span> <span style="color:oklch(var(--brand))">await</span> fetch(
+  <span style="color:oklch(0.78 0.12 150)">'https://luck.app.br/api/v1/widget/feed/CLIENT_ID?limit=12'</span>
+);
+<span style="color:oklch(var(--brand))">const</span> { data } <span style="color:oklch(var(--ink-rev) / .55)">=</span> <span style="color:oklch(var(--brand))">await</span> res.<span style="color:oklch(0.82 0.09 232)">json</span>();
+
+<span style="color:oklch(var(--ink-rev) / .42)">// data: [{ id, caption, media_type, media_url, permalink, timestamp }]</span>
+data.<span style="color:oklch(0.82 0.09 232)">forEach</span>(post <span style="color:oklch(var(--brand))">=></span> <span style="color:oklch(var(--ink-rev) / .42)">/* monte o HTML como quiser */</span>);</code></pre>
+            </div>
+          </div>
+
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Demo ao vivo -->
-  <section id="demo" class="py-24 px-6">
-    <div class="max-w-4xl mx-auto">
-      <div class="text-center mb-12">
-        <div class="inline-flex items-center gap-2 bg-sky-50 text-sky-700 px-4 py-2 rounded-full text-sm font-medium mb-6">
-          <span class="relative flex h-2 w-2">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2 w-2 bg-sky-500"></span>
+    <!-- ============================================ Como funciona -->
+    <section id="como-funciona" class="scroll-mt-16">
+      <div class="wrap py-20 md:py-28">
+        <div class="max-w-2xl">
+          <h2 class="reveal text-[clamp(1.9rem,3.6vw,2.9rem)] font-bold leading-tight">Três passos até o feed no ar</h2>
+          <p class="reveal mt-4 text-lg text-ink-soft">Você conecta, autoriza o domínio e consome. Sem build, sem dependência de terceiros.</p>
+        </div>
+
+        <ol class="mt-14 grid md:grid-cols-3 gap-x-8 gap-y-12 relative">
+          <!-- connecting hairline -->
+          <div class="hidden md:block absolute left-0 right-0 top-[1.375rem] h-px bg-line" aria-hidden="true"></div>
+
+          <li class="reveal relative" data-delay="1">
+            <div class="flex items-center gap-4 md:block">
+              <span class="step-num relative z-10">1</span>
+              <h3 class="font-bold text-xl mt-0 md:mt-6">Conecte a conta</h3>
+            </div>
+            <p class="mt-3 text-ink-soft leading-relaxed">Você cadastra o cliente e envia um link seguro. Ele clica, autoriza o Instagram em segundos e a conexão fica salva.</p>
+          </li>
+
+          <li class="reveal relative" data-delay="2">
+            <div class="flex items-center gap-4 md:block">
+              <span class="step-num relative z-10">2</span>
+              <h3 class="font-bold text-xl mt-0 md:mt-6">Autorize o domínio</h3>
+            </div>
+            <p class="mt-3 text-ink-soft leading-relaxed">Informe o domínio do site do cliente. A API só responde a origens autorizadas — nenhum outro site usa o token dele.</p>
+          </li>
+
+          <li class="reveal relative" data-delay="3">
+            <div class="flex items-center gap-4 md:block">
+              <span class="step-num relative z-10">3</span>
+              <h3 class="font-bold text-xl mt-0 md:mt-6">Consuma o feed</h3>
+            </div>
+            <p class="mt-3 text-ink-soft leading-relaxed">Um <code class="mono text-ocean text-[0.9em]">fetch()</code> retorna o JSON com os posts. Monte o layout que quiser, sem CSS ou HTML impostos.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============================================ Demo ao vivo -->
+    <section id="demo" class="scroll-mt-16" style="background-color: oklch(var(--surface));">
+      <div class="wrap py-20 md:py-28">
+        <div class="max-w-2xl">
+          <span class="pill reveal">
+            <span class="relative flex h-2 w-2">
+              <span class="live-ring absolute inline-flex h-full w-full rounded-full bg-brand"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-brand"></span>
+            </span>
+            Feed ao vivo
           </span>
-          Feed ao vivo
+          <h2 class="reveal mt-5 text-[clamp(1.9rem,3.6vw,2.9rem)] font-bold leading-tight">Veja a API respondendo agora</h2>
+          <p class="reveal mt-4 text-lg text-ink-soft">Os cards abaixo são carregados em tempo real com um único <code class="mono text-ocean text-[0.9em]">fetch()</code> à nossa API.</p>
         </div>
-        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Veja o resultado na prática</h2>
-        <p class="text-gray-500 text-lg max-w-2xl mx-auto">Os cards abaixo são carregados em tempo real pela nossa API com um simples <code class="bg-gray-100 border border-gray-200 px-1.5 py-0.5 rounded">fetch()</code>.</p>
-      </div>
 
-      <div id="ig-feed-grid" class="grid grid-cols-1 sm:grid-cols-3 gap-4"></div>
+        <div id="ig-feed-grid" class="reveal mt-12 grid grid-cols-1 sm:grid-cols-3 gap-4" aria-live="polite"></div>
 
-      <div id="ig-auth-notice" class="hidden mt-8 bg-amber-50 border border-amber-200 rounded-2xl p-5 flex items-start gap-4">
-        <div class="w-9 h-9 bg-amber-100 rounded-xl flex items-center justify-center flex-shrink-0">
-          <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-          </svg>
-        </div>
-        <div>
-          <p class="text-amber-900 font-semibold text-sm">Autenticação pendente</p>
-          <p class="text-amber-700 text-sm mt-1 leading-relaxed">Este cliente ainda não conectou a conta do Instagram. Após a autenticação, o feed real substituirá os cards de exemplo automaticamente.</p>
+        <div id="ig-auth-notice" class="hidden mt-8 card p-5 flex items-start gap-4" style="border-color: oklch(var(--brand) / .35); background-color: oklch(var(--brand) / .06);">
+          <div class="shrink-0 w-9 h-9 rounded-xl flex items-center justify-center" style="background-color: oklch(var(--brand) / .14);">
+            <svg class="w-5 h-5 text-ocean" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="4" y="11" width="16" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" />
+            </svg>
+          </div>
+          <div>
+            <p class="font-semibold text-ink">Autenticação pendente</p>
+            <p class="text-ink-soft text-sm mt-1 leading-relaxed">Este cliente ainda não conectou a conta do Instagram. Após a autenticação, o feed real substitui os cards de exemplo automaticamente.</p>
+          </div>
         </div>
       </div>
+    </section>
+
+    <!-- ============================================ Recursos -->
+    <section id="recursos" class="scroll-mt-16">
+      <div class="wrap py-20 md:py-28">
+        <div class="max-w-2xl">
+          <h2 class="reveal text-[clamp(1.9rem,3.6vw,2.9rem)] font-bold leading-tight">Infraestrutura pronta, foco no produto</h2>
+          <p class="reveal mt-4 text-lg text-ink-soft">A parte chata — tokens, cache, segurança — já está resolvida. Você cuida do layout.</p>
+        </div>
+
+        <div class="reveal mt-14 grid sm:grid-cols-2 lg:grid-cols-3 border-t border-l border-line rounded-2xl overflow-hidden">
+
+          <article class="feature-cell border-b border-r border-line p-7">
+            <svg class="w-6 h-6 text-ocean" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4.5 12.5h6L11 22l8.5-10.5h-6z"/></svg>
+            <h3 class="font-bold text-lg mt-4">Cache automático</h3>
+            <p class="mt-2 text-ink-soft text-sm leading-relaxed">Redis com TTL de 2 horas. O site carrega na hora, sem bater na API do Instagram a cada visita.</p>
+          </article>
+
+          <article class="feature-cell border-b border-r border-line p-7">
+            <svg class="w-6 h-6 text-ocean" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg>
+            <h3 class="font-bold text-lg mt-4">Renovação de tokens</h3>
+            <p class="mt-2 text-ink-soft text-sm leading-relaxed">Um cron diário renova os tokens antes de expirarem. Sem intervenção manual, sem perda de acesso.</p>
+          </article>
+
+          <article class="feature-cell border-b border-r border-line p-7">
+            <svg class="w-6 h-6 text-ocean" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            <h3 class="font-bold text-lg mt-4">CORS por domínio</h3>
+            <p class="mt-2 text-ink-soft text-sm leading-relaxed">Cada cliente tem seus domínios autorizados. A API rejeita requisições de origens não cadastradas.</p>
+          </article>
+
+          <article class="feature-cell border-b border-r border-line p-7">
+            <svg class="w-6 h-6 text-ocean" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="7" r="3"/><path d="M2 21v-1a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v1"/><path d="M16 3.1a3 3 0 0 1 0 5.8"/><path d="M22 21v-1a5 5 0 0 0-3-4.6"/></svg>
+            <h3 class="font-bold text-lg mt-4">Multi-tenant</h3>
+            <p class="mt-2 text-ink-soft text-sm leading-relaxed">Gerencie vários clientes numa só infraestrutura. Cada um com sua conta do Instagram e domínios isolados.</p>
+          </article>
+
+          <article class="feature-cell border-b border-r border-line p-7">
+            <svg class="w-6 h-6 text-ocean" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/></svg>
+            <h3 class="font-bold text-lg mt-4">JSON puro, zero lock-in</h3>
+            <p class="mt-2 text-ink-soft text-sm leading-relaxed">Nenhum HTML, nenhum CSS imposto. Você recebe os dados e cria o layout exatamente como o design pede.</p>
+          </article>
+
+          <article class="feature-cell border-b border-r border-line p-7">
+            <svg class="w-6 h-6 text-ocean" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>
+            <h3 class="font-bold text-lg mt-4">Infraestrutura própria</h3>
+            <p class="mt-2 text-ink-soft text-sm leading-relaxed">PostgreSQL + Redis + Node em Docker. Sem depender de serviços terceiros de widget. Seus dados, sob seu controle.</p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================ Preços -->
+    <!-- <section id="precos" class="scroll-mt-16" style="background-color: oklch(var(--surface));">
+      <div class="wrap py-20 md:py-28">
+        <div class="grid lg:grid-cols-[1fr_auto] gap-10 lg:gap-16 items-center">
+          <div class="reveal max-w-md">
+            <h2 class="text-[clamp(1.9rem,3.6vw,2.9rem)] font-bold leading-tight">Preço simples, por cliente</h2>
+            <p class="mt-4 text-lg text-ink-soft leading-relaxed">Sem cobrança por requisição, sem surpresa no fim do mês. Um valor fixo por conta conectada — e está tudo incluído.</p>
+            <p class="mt-6 text-sm text-ink-mute mono">faturamento mensal&nbsp;·&nbsp;cancele quando quiser</p>
+          </div>
+
+          <div class="reveal w-full max-w-md lg:w-[24rem]" data-delay="1">
+            <div class="card p-8 md:p-10" style="box-shadow: 0 30px 60px -36px oklch(var(--coal) / .35);">
+              <p class="text-ocean font-semibold text-sm">Por cliente / mês</p>
+              <div class="mt-2 flex items-baseline gap-1">
+                <span class="font-display font-extrabold text-5xl tracking-tight text-ink">R$&nbsp;47</span>
+                <span class="text-2xl text-ink-mute font-display font-semibold">,99</span>
+              </div>
+
+              <hr class="rule my-7" />
+
+              <ul class="space-y-3 text-[0.95rem]">
+                <li class="flex items-start gap-3 text-ink">
+                  <svg class="w-5 h-5 text-ocean shrink-0 mt-px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                  Feed com até 12 posts
+                </li>
+                <li class="flex items-start gap-3 text-ink">
+                  <svg class="w-5 h-5 text-ocean shrink-0 mt-px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                  Cache Redis de 2 horas
+                </li>
+                <li class="flex items-start gap-3 text-ink">
+                  <svg class="w-5 h-5 text-ocean shrink-0 mt-px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                  Renovação automática de tokens
+                </li>
+                <li class="flex items-start gap-3 text-ink">
+                  <svg class="w-5 h-5 text-ocean shrink-0 mt-px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                  Múltiplos domínios autorizados
+                </li>
+                <li class="flex items-start gap-3 text-ink">
+                  <svg class="w-5 h-5 text-ocean shrink-0 mt-px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                  Suporte por email
+                </li>
+              </ul>
+
+              <a href="mailto:contato@luck.app.br" class="btn btn-primary w-full mt-8">Contratar agora</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section> -->
+
+    <!-- ============================================ CTA final (coal) -->
+    <section class="coal coal-grain">
+      <div class="wrap py-20 md:py-28 text-center max-w-2xl">
+        <h2 class="reveal text-[clamp(2rem,4vw,3rem)] font-bold leading-tight">Pronto para integrar?</h2>
+        <p class="reveal mt-4 text-lg leading-relaxed" style="color: oklch(var(--ink-rev) / .75);">
+          Conte qual cliente você quer conectar — devolvemos o feed em JSON em minutos.
+        </p>
+        <div class="reveal mt-9 flex flex-col sm:flex-row gap-3 justify-center">
+          <a href="mailto:contato@luck.app.br" class="btn btn-primary text-base">Falar com a equipe</a>
+          <a href="#api" class="btn btn-on-coal text-base">Rever a API</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================ Footer -->
+  <footer class="border-t border-line">
+    <div class="wrap py-10 flex flex-col md:flex-row items-center justify-between gap-6 text-sm">
+      <img src="logo.svg" alt="Instagram Widget by Luck" class="h-6 w-auto" />
+      <nav class="flex flex-col sm:flex-row items-center gap-3 sm:gap-6" aria-label="Links legais">
+        <a href="privacidade.html" class="nav-link">Política de Privacidade</a>
+        <a href="termos.html" class="nav-link">Termos de Serviço</a>
+        <a href="exclusao-de-dados.html" class="nav-link">Exclusão de Dados</a>
+      </nav>
+      <span class="text-ink-mute text-center md:text-right">© 2026 Lucas Carvalho Serviços de Tecnologia</span>
     </div>
-  </section>
+  </footer>
 
+  <script src="assets/app.js"></script>
+
+  <!-- Live feed: fetches the real API and renders into #ig-feed-grid -->
   <script>
     (function () {
-      var FEED_URL = 'https://luck.app.br/api/v1/widget/feed/33848ce9-02c3-4767-bddc-f57e939f27af?limit=3';
+      var FEED_URL = "https://luck.app.br/api/v1/widget/feed/33848ce9-02c3-4767-bddc-f57e939f27af?limit=3";
+      var grid = document.getElementById("ig-feed-grid");
+      var notice = document.getElementById("ig-auth-notice");
+      if (!grid) return;
 
-      function makePlaceholder() {
-        return '<div class="rounded-2xl overflow-hidden border border-gray-200 bg-white">' +
-          '<div class="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 flex flex-col items-center justify-center gap-3">' +
-          '<div class="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow border border-gray-100">' +
-          '<svg class="w-7 h-7 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
-          '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />' +
-          '</svg>' +
+      function placeholder() {
+        return '' +
+          '<div class="card overflow-hidden">' +
+          '<div class="aspect-square flex flex-col items-center justify-center gap-3" style="background-color: oklch(var(--surface-2));">' +
+          '<div class="w-14 h-14 rounded-full flex items-center justify-center border border-line skeleton" style="background-color: oklch(var(--bg));">' +
+          '<svg class="w-7 h-7 text-ink-mute" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>' +
           '</div>' +
-          '<p class="text-gray-400 text-xs font-medium text-center leading-snug">Aguardando<br>autenticação</p>' +
+          '<p class="text-ink-mute text-xs font-medium text-center leading-snug">Aguardando<br>autenticação</p>' +
           '</div>' +
           '<div class="p-4 space-y-2.5">' +
-          '<div class="h-2.5 bg-gray-100 rounded-full w-full animate-pulse"></div>' +
-          '<div class="h-2.5 bg-gray-100 rounded-full w-4/5 animate-pulse"></div>' +
-          '<div class="h-2.5 bg-gray-100 rounded-full w-2/3 animate-pulse"></div>' +
-          '</div>' +
-          '</div>';
+          '<div class="h-2.5 rounded-full w-full skeleton" style="background-color: oklch(var(--surface-2));"></div>' +
+          '<div class="h-2.5 rounded-full w-4/5 skeleton" style="background-color: oklch(var(--surface-2));"></div>' +
+          '<div class="h-2.5 rounded-full w-2/3 skeleton" style="background-color: oklch(var(--surface-2));"></div>' +
+          '</div></div>';
       }
 
-      function makePostCard(post) {
-        var src = post.media_type === 'VIDEO' ? (post.thumbnail_url || post.media_url) : post.media_url;
-        var caption = (post.caption || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        return '<a href="' + post.permalink + '" target="_blank" rel="noopener noreferrer" ' +
-          'class="rounded-2xl overflow-hidden border border-gray-100 bg-white block group card-hover">' +
-          '<div class="aspect-square overflow-hidden bg-gray-100">' +
-          '<img src="' + src + '" alt="" loading="lazy" ' +
-          'class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />' +
+      function card(post) {
+        var src = post.media_type === "VIDEO" ? (post.thumbnail_url || post.media_url) : post.media_url;
+        var caption = (post.caption || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        return '' +
+          '<a href="' + post.permalink + '" target="_blank" rel="noopener noreferrer" class="card card-hover overflow-hidden block group">' +
+          '<div class="aspect-square overflow-hidden" style="background-color: oklch(var(--surface-2));">' +
+          '<img src="' + src + '" alt="Publicação do Instagram" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />' +
           '</div>' +
           '<div class="p-4">' +
-          '<p class="text-xs text-gray-500 leading-relaxed" style="display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">' + caption + '</p>' +
-          '</div>' +
-          '</a>';
+          '<p class="text-xs text-ink-soft leading-relaxed" style="display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">' + caption + '</p>' +
+          '</div></a>';
       }
 
-      var grid = document.getElementById('ig-feed-grid');
-      var notice = document.getElementById('ig-auth-notice');
-
-      grid.innerHTML = makePlaceholder() + makePlaceholder() + makePlaceholder();
+      grid.innerHTML = placeholder() + placeholder() + placeholder();
 
       fetch(FEED_URL)
-        .then(function (res) {
-          return res.json().then(function (body) { return { ok: res.ok, body: body }; });
-        })
+        .then(function (res) { return res.json().then(function (body) { return { ok: res.ok, body: body }; }); })
         .then(function (r) {
           var posts = r.body && r.body.data;
           if (r.ok && Array.isArray(posts) && posts.length > 0) {
-            grid.innerHTML = posts.map(makePostCard).join('');
-          } else {
-            notice.classList.remove('hidden');
+            grid.innerHTML = posts.map(card).join("");
+          } else if (notice) {
+            notice.classList.remove("hidden");
           }
         })
-        .catch(function () {
-          notice.classList.remove('hidden');
-        });
+        .catch(function () { if (notice) notice.classList.remove("hidden"); });
     })();
   </script>
-
-  <!-- Recursos -->
-  <section id="recursos" class="py-24 px-6">
-    <div class="max-w-6xl mx-auto">
-      <div class="text-center mb-16">
-        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Tudo que você precisa</h2>
-        <p class="text-gray-500 text-lg">Infraestrutura robusta para você focar no produto.</p>
-      </div>
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-        <div class="p-6 rounded-2xl border border-gray-100 card-hover">
-          <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-            <svg class="w-5 h-5 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
-          </div>
-          <h3 class="font-bold text-lg mb-2">Cache automático</h3>
-          <p class="text-gray-500 text-sm leading-relaxed">Redis com TTL de 2 horas. O site do cliente carrega
-            instantaneamente sem bater na API do Instagram a cada visita.</p>
-        </div>
-
-        <div class="p-6 rounded-2xl border border-gray-100 card-hover">
-          <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mb-4">
-            <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-          </div>
-          <h3 class="font-bold text-lg mb-2">Renovação automática de tokens</h3>
-          <p class="text-gray-500 text-sm leading-relaxed">Cron job diário que renova os tokens antes de expirarem. Sem
-            intervenção manual, sem perda de acesso para o cliente.</p>
-        </div>
-
-        <div class="p-6 rounded-2xl border border-gray-100 card-hover">
-          <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-            </svg>
-          </div>
-          <h3 class="font-bold text-lg mb-2">CORS por domínio</h3>
-          <p class="text-gray-500 text-sm leading-relaxed">Cada cliente tem seus domínios autorizados. A API rejeita
-            requisições de origens não cadastradas automaticamente.</p>
-        </div>
-
-        <div class="p-6 rounded-2xl border border-gray-100 card-hover">
-          <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
-            <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-          </div>
-          <h3 class="font-bold text-lg mb-2">Multi-tenant</h3>
-          <p class="text-gray-500 text-sm leading-relaxed">Gerencie múltiplos clientes em uma única infraestrutura. Cada
-            um com sua própria conta Instagram e domínios isolados.</p>
-        </div>
-
-        <div class="p-6 rounded-2xl border border-gray-100 card-hover">
-          <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-            </svg>
-          </div>
-          <h3 class="font-bold text-lg mb-2">JSON puro, zero lock-in</h3>
-          <p class="text-gray-500 text-sm leading-relaxed">Nenhum HTML, nenhum CSS imposto. Você recebe os dados e cria
-            o layout exatamente como o design pede.</p>
-        </div>
-
-        <div class="p-6 rounded-2xl border border-gray-100 card-hover">
-          <div class="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center mb-4">
-            <svg class="w-5 h-5 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
-            </svg>
-          </div>
-          <h3 class="font-bold text-lg mb-2">Infraestrutura própria</h3>
-          <p class="text-gray-500 text-sm leading-relaxed">PostgreSQL + Redis + Node.js em Docker. Sem dependência de
-            serviços terceiros de widget. Seus dados, sob seu controle.</p>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- Preços -->
-  <section id="precos" class="py-24 px-6 bg-gray-50">
-    <div class="max-w-4xl mx-auto text-center">
-      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Preço simples</h2>
-      <p class="text-gray-500 text-lg mb-12">Sem surpresas. Sem cobranças por requisição.</p>
-      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-10 max-w-md mx-auto">
-        <div class="gradient-bg text-white text-sm font-semibold px-3 py-1 rounded-full inline-block mb-6">Por cliente /
-          mês</div>
-        <div class="text-5xl font-bold text-gray-900 mb-2">
-          R$ 47<span class="text-2xl text-gray-400 font-normal">,99</span>
-        </div>
-        <p class="text-gray-400 text-sm mb-8"></p>
-        <ul class="text-left space-y-3 mb-10">
-          <li class="flex items-center gap-3 text-gray-600">
-            <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            Feed com até 12 posts
-          </li>
-          <li class="flex items-center gap-3 text-gray-600">
-            <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            Cache Redis de 2 horas
-          </li>
-          <li class="flex items-center gap-3 text-gray-600">
-            <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            Renovação automática de tokens
-          </li>
-          <li class="flex items-center gap-3 text-gray-600">
-            <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            Múltiplos domínios autorizados
-          </li>
-          <li class="flex items-center gap-3 text-gray-600">
-            <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            Suporte via email
-          </li>
-        </ul>
-        <a href="mailto:contato@luck.app.br"
-          class="gradient-bg text-white w-full py-4 rounded-xl font-semibold text-lg block hover:opacity-90 transition-opacity">
-          Contratar agora
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA final -->
-  <section class="py-24 px-6">
-    <div class="max-w-3xl mx-auto text-center">
-      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-        Pronto para integrar?
-      </h2>
-      <p class="text-gray-500 text-lg mb-8">
-        Entre em contato e conectamos a conta do seu cliente em minutos.
-      </p>
-      <a href="mailto:contato@luck.app.br"
-        class="gradient-bg text-white px-10 py-4 rounded-xl font-semibold text-lg inline-block hover:opacity-90 transition-opacity shadow-lg">
-        Falar com a equipe
-      </a>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="border-t border-gray-100 py-10 px-6">
-    <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-400">
-      <img src="logo.svg" alt="Instagram Widget by Luck" class="h-7" />
-      <div class="flex flex-col md:flex-row items-center gap-3 md:gap-6">
-        <a href="privacidade.html" class="hover:text-gray-600 transition-colors">Política de Privacidade</a>
-        <a href="termos.html" class="hover:text-gray-600 transition-colors">Termos de Serviço</a>
-        <a href="exclusao-de-dados.html" class="hover:text-gray-600 transition-colors">Exclusão de Dados</a>
-      </div>
-      <span class="text-center md:text-left">© 2026 Lucas Carvalho Serviços de Tecnologia. Todos os direitos reservados.</span>
-    </div>
-  </footer>
 
 </body>
 
