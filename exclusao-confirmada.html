@@ -15,7 +15,7 @@
       try {
         var s = localStorage.getItem("theme");
         var dark = s ? s === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
-        if (dark) { d.classList.add("dark"); var m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute("content", "#1f2a30"); }
+        if (dark) { d.classList.add("dark"); var m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute("content", "#191512"); }
       } catch (e) {}
     })();
   </script>
@@ -36,7 +36,8 @@
   <header class="site-header">
     <div class="wrap flex items-center justify-between h-16">
       <a href="index.html" class="flex items-center shrink-0" aria-label="Instagram Widget by Luck — início">
-        <img src="logo.svg" alt="Instagram Widget by Luck" class="h-7 w-auto" />
+        <img src="logo-dark.svg" alt="Instagram Widget by Luck" class="logo-on-light h-7 w-auto" />
+        <img src="logo-white.svg" alt="Instagram Widget by Luck" class="logo-on-dark h-7 w-auto" />
       </a>
       <button type="button" class="icon-btn" data-theme-toggle aria-label="Mudar tema">
         <svg class="moon w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" /></svg>

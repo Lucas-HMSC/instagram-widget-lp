@@ -1,37 +1,41 @@
 /* ============================================================
    Instagram Widget by Luck — design system
-   Adapted from the ~/repos/app token architecture:
+   Ported directly from the ~/repos/app token architecture:
    committed single-hue identity, OKLCH semantic tokens,
    warm-dark coal bands, opt-in dark theme.
-   Here the committed hue is the product's own azure/ocean blue.
+   The committed hue is the design system's signature amber/honey;
+   the warm near-black ink ramp and coal bands come with it.
+   NOTE: `--ocean` / `--ocean-strong` are retained as token *names*
+   for backward compatibility, but now carry the app's `--ember`
+   amber-family text color (amber text on white / lifted on dark).
    ============================================================ */
 
 :root {
   /* color tokens stored as `L C H` triplets for oklch(... / <alpha>) */
   --bg:        1 0 0;            /* pure white page background          */
-  --surface:   0.975 0.006 232; /* cool off-white — alternating bands  */
-  --surface-2: 0.945 0.010 232; /* deeper cool surface — insets, code  */
-  --line:      0.905 0.008 232; /* hairline borders                    */
+  --surface:   0.974 0.007 80;  /* warm off-white — alternating bands  */
+  --surface-2: 0.945 0.011 80;  /* deeper warm surface — insets, code  */
+  --line:      0.905 0.008 78;  /* hairline borders                    */
 
-  --ink:       0.230 0.014 245; /* body + headings, cool near-black ~14:1 */
-  --ink-soft:  0.450 0.018 242; /* secondary text ~5:1                 */
-  --ink-mute:  0.585 0.014 242; /* de-emphasized labels (large only)   */
+  --ink:       0.220 0.016 58;  /* body + headings, warm near-black ~15:1 */
+  --ink-soft:  0.440 0.018 58;  /* secondary text ~5:1                 */
+  --ink-mute:  0.580 0.016 60;  /* de-emphasized labels (large only)   */
 
-  --brand:        0.699 0.134 231; /* signature azure (#20ACE2) — FILLS/graphics only */
-  --brand-strong: 0.640 0.140 233; /* azure hover / pressed             */
-  --ocean:        0.450 0.103 240; /* deep ocean (#005a87) — blue TEXT/links on white ~7:1 */
-  --ocean-strong: 0.380 0.100 241; /* ocean hover                       */
+  --brand:        0.700 0.168 58; /* signature amber — FILLS/underlines/graphics only */
+  --brand-strong: 0.620 0.175 52; /* amber hover / pressed             */
+  --ocean:        0.450 0.140 48; /* ember — amber-family TEXT/links on white ~5:1 */
+  --ocean-strong: 0.400 0.135 46; /* ember hover                       */
 
-  --coal:    0.255 0.040 240;   /* deep-navy band background (#003651 family) */
-  --coal-2:  0.320 0.046 240;   /* raised surface on coal              */
-  --ink-rev: 0.965 0.006 232;   /* text on coal                        */
+  --coal:    0.190 0.012 60;    /* warm near-black band background      */
+  --coal-2:  0.255 0.014 60;    /* raised surface on coal              */
+  --ink-rev: 0.965 0.006 82;    /* text on coal                        */
 
   --live: 0.66 0.15 150;        /* "live feed" status dot only          */
 
-  /* text on a saturated azure fill — always dark, both themes */
-  --on-brand: 0.200 0.020 240;
-  /* text on a solid ocean/ink button — inverts with the theme */
-  --on-solid: 0.985 0.004 232;
+  /* text on a saturated amber fill — always dark, both themes */
+  --on-brand: 0.200 0.020 60;
+  /* text on a solid ink button — inverts with the theme */
+  --on-solid: 0.965 0.006 82;
 
   --container: 75rem; /* 1200px */
 
@@ -39,28 +43,28 @@
 }
 
 .dark {
-  --bg:        0.175 0.012 245;
-  --surface:   0.215 0.013 243;
-  --surface-2: 0.255 0.014 243;
-  --line:      0.310 0.014 243;
+  --bg:        0.155 0.008 60;
+  --surface:   0.198 0.009 60;
+  --surface-2: 0.238 0.010 60;
+  --line:      0.300 0.010 60;
 
-  --ink:       0.945 0.005 235;
-  --ink-soft:  0.755 0.012 238;
-  --ink-mute:  0.600 0.012 240;
+  --ink:       0.940 0.006 85;
+  --ink-soft:  0.745 0.010 75;
+  --ink-mute:  0.580 0.010 68;
 
-  --brand:        0.730 0.130 230;
-  --brand-strong: 0.790 0.120 232;
-  --ocean:        0.760 0.115 232; /* lifted so blue text reads on the dark ground */
-  --ocean-strong: 0.820 0.105 234;
+  --brand:        0.760 0.155 67;
+  --brand-strong: 0.820 0.140 70;
+  --ocean:        0.800 0.130 72; /* ember lifted so amber text reads on the dark ground */
+  --ocean-strong: 0.850 0.120 74;
 
-  --coal:    0.245 0.014 243;   /* coal becomes a gently elevated panel */
-  --coal-2:  0.305 0.016 243;
-  --ink-rev: 0.955 0.006 235;
+  --coal:    0.225 0.012 60;    /* coal becomes a gently elevated panel */
+  --coal-2:  0.290 0.014 60;
+  --ink-rev: 0.950 0.006 85;
 
   --live: 0.72 0.15 152;
 
-  --on-brand: 0.180 0.020 240;
-  --on-solid: 0.175 0.012 245;
+  --on-brand: 0.180 0.020 60;
+  --on-solid: 0.150 0.010 60;
 
   color-scheme: dark;
 }
@@ -269,6 +273,11 @@ code, pre, .mono { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, 
 .icon-btn .moon { display: block; }
 .dark .icon-btn .sun { display: block; }
 .dark .icon-btn .moon { display: none; }
+
+/* theme-aware wordmark — dark-ink logo on light, warm-white logo on dark */
+.logo-on-dark { display: none; }
+.dark .logo-on-light { display: none; }
+.dark .logo-on-dark { display: inline-block; }
 
 /* hamburger */
 .hamburger { position: relative; width: 1.5rem; height: 1rem; }

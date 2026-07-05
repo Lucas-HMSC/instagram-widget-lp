@@ -26,7 +26,7 @@
         if (dark) {
           d.classList.add("dark");
           var m = document.querySelector('meta[name="theme-color"]');
-          if (m) m.setAttribute("content", "#1f2a30");
+          if (m) m.setAttribute("content", "#191512");
         }
       } catch (e) {}
     })();
@@ -49,7 +49,8 @@
   <header class="site-header">
     <div class="wrap flex items-center justify-between h-16">
       <a href="index.html" class="flex items-center shrink-0" aria-label="Instagram Widget by Luck — início">
-        <img src="logo.svg" alt="Instagram Widget by Luck" class="h-7 w-auto" />
+        <img src="logo-dark.svg" alt="Instagram Widget by Luck" class="logo-on-light h-7 w-auto" />
+        <img src="logo-white.svg" alt="Instagram Widget by Luck" class="logo-on-dark h-7 w-auto" />
       </a>
 
       <nav class="hidden md:flex items-center gap-8" aria-label="Navegação principal">
@@ -158,10 +159,10 @@
               <pre class="text-[13px] md:text-sm leading-relaxed overflow-x-auto p-5"><code><span style="color:oklch(var(--brand))">const</span> res <span style="color:oklch(var(--ink-rev) / .55)">=</span> <span style="color:oklch(var(--brand))">await</span> fetch(
   <span style="color:oklch(0.78 0.12 150)">'https://luck.app.br/api/v1/widget/feed/CLIENT_ID?limit=12'</span>
 );
-<span style="color:oklch(var(--brand))">const</span> { data } <span style="color:oklch(var(--ink-rev) / .55)">=</span> <span style="color:oklch(var(--brand))">await</span> res.<span style="color:oklch(0.82 0.09 232)">json</span>();
+<span style="color:oklch(var(--brand))">const</span> { data } <span style="color:oklch(var(--ink-rev) / .55)">=</span> <span style="color:oklch(var(--brand))">await</span> res.<span style="color:oklch(var(--ink-rev) / .82)">json</span>();
 
 <span style="color:oklch(var(--ink-rev) / .42)">// data: [{ id, caption, media_type, media_url, permalink, timestamp }]</span>
-data.<span style="color:oklch(0.82 0.09 232)">forEach</span>(post <span style="color:oklch(var(--brand))">=></span> <span style="color:oklch(var(--ink-rev) / .42)">/* monte o HTML como quiser */</span>);</code></pre>
+data.<span style="color:oklch(var(--ink-rev) / .82)">forEach</span>(post <span style="color:oklch(var(--brand))">=></span> <span style="color:oklch(var(--ink-rev) / .42)">/* monte o HTML como quiser */</span>);</code></pre>
             </div>
           </div>
 
@@ -358,7 +359,8 @@ data.<span style="color:oklch(0.82 0.09 232)">forEach</span>(post <span style="c
   <!-- ============================================ Footer -->
   <footer class="border-t border-line">
     <div class="wrap py-10 flex flex-col md:flex-row items-center justify-between gap-6 text-sm">
-      <img src="logo.svg" alt="Instagram Widget by Luck" class="h-6 w-auto" />
+      <img src="logo-dark.svg" alt="Instagram Widget by Luck" class="logo-on-light h-6 w-auto" />
+      <img src="logo-white.svg" alt="Instagram Widget by Luck" class="logo-on-dark h-6 w-auto" />
       <nav class="flex flex-col sm:flex-row items-center gap-3 sm:gap-6" aria-label="Links legais">
         <a href="privacidade.html" class="nav-link">Política de Privacidade</a>
         <a href="termos.html" class="nav-link">Termos de Serviço</a>
