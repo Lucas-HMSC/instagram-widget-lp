@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — Instagram Widget by Luck</title>
+  <meta name="description" content="How Instagram Widget by Luck collects, uses, and protects data, in compliance with GDPR, LGPD, and Meta policies." />
+  <meta name="theme-color" content="#ffffff" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+  <script>
+    (function () {
+      var d = document.documentElement; d.classList.add("js");
+      try {
+        var s = localStorage.getItem("theme");
+        var dark = s ? s === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+        if (dark) { d.classList.add("dark"); var m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute("content", "#191512"); }
+      } catch (e) {}
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400..700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/theme.css" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/assets/tailwind.config.js"></script>
+</head>
+
+<body>
+
+  <header class="site-header">
+    <div class="wrap flex items-center justify-between h-16">
+      <a href="/en" class="flex items-center shrink-0" aria-label="Instagram Widget by Luck — home">
+        <img src="/logo-dark.svg" alt="Instagram Widget by Luck" class="logo-on-light h-7 w-auto" />
+        <img src="/logo-white.svg" alt="Instagram Widget by Luck" class="logo-on-dark h-7 w-auto" />
+      </a>
+      <div class="flex items-center gap-3">
+        <!-- Language Switcher -->
+        <div class="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider mono text-ink-soft mr-1" aria-label="Select language">
+          <a href="/privacidade" onclick="try{localStorage.setItem('lang', 'pt')}catch(e){}" class="hover:text-ocean transition-colors">PT</a>
+          <span class="text-line opacity-40">|</span>
+          <span class="text-ocean font-bold" aria-current="page">EN</span>
+        </div>
+
+        <button type="button" class="icon-btn" data-theme-toggle aria-label="Change theme">
+          <svg class="moon w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" /></svg>
+          <svg class="sun w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
+        </button>
+        <a href="/en" class="nav-link">← Back</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap py-16 md:py-20">
+    <div class="prose">
+      <h1 class="text-[clamp(2rem,5vw,2.75rem)] font-extrabold leading-tight">Privacy Policy</h1>
+      <p class="text-ink-mute text-sm mt-3 mb-10 mono">Last updated: April 26, 2026</p>
+
+      <p>This Privacy Policy describes how <strong>Lucas Carvalho Serviços de Tecnologia</strong> (CNPJ 57.590.985/0001-70) ("we", "our") collects, uses, and protects information obtained through the <strong>Instagram Widget by Luck</strong> platform, in compliance with the General Data Protection Regulation (GDPR), the Brazilian General Data Protection Law (LGPD — Law No. 13,709/2018), and Meta platform policies.</p>
+
+      <h2>1. Who we are</h2>
+      <p>The <strong>Instagram Widget by Luck</strong> is an API service that displays Instagram feeds on third-party websites, operated by <strong>Lucas Carvalho Serviços de Tecnologia</strong>, registered under the CNPJ under No. 57.590.985/0001-70. We operate as a data processor in relation to the information provided by the Instagram / Meta API.</p>
+
+      <h2>2. Data we collect</h2>
+      <h3>2.1 Customer data (users of the service)</h3>
+      <p>When subscribing to the <strong>Instagram Widget by Luck</strong>, we collect:</p>
+      <ul>
+        <li>Name and contact information (email)</li>
+        <li>Domain(s) of the customer's website</li>
+      </ul>
+
+      <h3>2.2 Instagram data (via OAuth authorization)</h3>
+      <p>When the customer authorizes our app via Instagram, we receive from the Meta API:</p>
+      <ul>
+        <li><strong>Instagram user ID</strong></li>
+        <li><strong>Username</strong></li>
+        <li><strong>Long-lived access token</strong> — stored securely to fetch the feed</li>
+        <li><strong>Post metadata</strong>: ID, caption, media type, media URL, permanent URL, and publication timestamp</li>
+      </ul>
+      <p>We do not collect passwords, emails, phone numbers, banking information, or any other personal data from Instagram other than the items above.</p>
+
+      <h3>2.3 Technical data</h3>
+      <ul>
+        <li>Origin domain of API requests</li>
+        <li>Access logs (for security and diagnostic purposes)</li>
+      </ul>
+
+      <h2>3. How we use the data</h2>
+      <ul>
+        <li>Fetch and deliver the customer's Instagram feed to their website</li>
+        <li>Cache the feed (Redis, 2-hour TTL) to optimize performance</li>
+        <li>Automatically renew the access token before it expires</li>
+        <li>Validate that requests originate from domains authorized by the customer</li>
+      </ul>
+      <p>We do not sell, rent, share, or use the data for advertising purposes.</p>
+
+      <h2>4. Storage and security</h2>
+      <p>Data is stored on AWS servers. We adopt the following security measures:</p>
+      <ul>
+        <li>HTTPS communication on all endpoints</li>
+        <li>Access tokens stored in databases with restricted access</li>
+        <li>Multi-tenant isolation — each customer only accesses their own data</li>
+        <li>Origin validation (CORS) per registered domain</li>
+      </ul>
+
+      <h2>5. Data retention</h2>
+      <p>Data is retained as long as the service agreement is active. After cancellation, data is deleted within 30 days, unless legally required to be retained.</p>
+
+      <h2>6. Your rights (GDPR / LGPD)</h2>
+      <p>You have the right to:</p>
+      <ul>
+        <li>Confirm the processing of your data</li>
+        <li>Access your data</li>
+        <li>Correct incomplete or outdated data</li>
+        <li>Request the deletion of your data</li>
+        <li>Revoke consent at any time</li>
+      </ul>
+      <p>To exercise your rights, please visit our <a href="/en/data-deletion">data deletion page</a> or contact us via email at <a href="mailto:privacidade@luck.app.br">privacidade@luck.app.br</a>.</p>
+
+      <h2>7. Third-party data (Meta / Instagram)</h2>
+      <p>Our use of Meta APIs is subject to the <a href="https://developers.facebook.com/policy/" target="_blank" rel="noopener">Meta Platform Terms and Policies</a>. We do not store Instagram data beyond what is necessary to provide the service.</p>
+
+      <h2>8. Cookies</h2>
+      <p>This website does not use tracking or advertising cookies. We only use strictly necessary storage for the API's operation.</p>
+
+      <h2>9. Changes to this policy</h2>
+      <p>We may update this policy periodically. We will notify active customers of relevant changes by email. Continued use of the service after notification constitutes acceptance of the new conditions.</p>
+
+      <h2>10. Contact</h2>
+      <p>Questions about this policy? Contact us:</p>
+      <ul>
+        <li>Lucas Carvalho Serviços de Tecnologia — CNPJ 57.590.985/0001-70</li>
+        <li>Email: <a href="mailto:contato@luck.app.br">contato@luck.app.br</a></li>
+        <li>Website: <a href="https://luck.app.br">luck.app.br</a></li>
+      </ul>
+    </div>
+  </main>
+
+  <footer class="border-t border-line">
+    <div class="wrap py-10 flex flex-col md:flex-row items-center justify-between gap-6 text-sm">
+      <div class="flex items-center gap-4 shrink-0">
+        <div class="flex items-center shrink-0">
+          <img src="/logo-dark.svg" alt="Instagram Widget by Luck" class="logo-on-light h-6 w-auto" />
+          <img src="/logo-white.svg" alt="Instagram Widget by Luck" class="logo-on-dark h-6 w-auto" />
+        </div>
+        <span class="text-line opacity-30">|</span>
+        <!-- Language selector in footer -->
+        <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider mono text-ink-soft whitespace-nowrap" aria-label="Language / Idioma">
+          <a href="/privacidade" onclick="try{localStorage.setItem('lang', 'pt')}catch(e){}" class="hover:text-ocean transition-colors">PT-BR</a>
+          <span class="text-line opacity-40">·</span>
+          <span class="text-ocean" aria-current="page">EN-US</span>
+        </div>
+      </div>
+
+      <nav class="flex flex-col sm:flex-row items-center gap-3 sm:gap-6 whitespace-nowrap" aria-label="Legal links">
+        <a href="/en/privacy" class="nav-link">Privacy Policy</a>
+        <a href="/en/terms" class="nav-link">Terms of Service</a>
+        <a href="/en/data-deletion" class="nav-link">Data Deletion</a>
+      </nav>
+      <span class="text-ink-mute text-center md:text-right">© 2026 Lucas Carvalho Serviços de Tecnologia · CNPJ 57.590.985/0001-70</span>
+    </div>
+  </footer>
+
+  <script src="/assets/app.js"></script>
+</body>
+
+</html>

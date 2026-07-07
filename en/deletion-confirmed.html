@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Solicitação Recebida — Instagram Widget by Luck</title>
-  <meta name="description" content="Sua solicitação de exclusão de dados foi recebida." />
+  <title>Request Received — Instagram Widget by Luck</title>
+  <meta name="description" content="Your data deletion request has been received." />
   <meta name="theme-color" content="#ffffff" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
@@ -35,19 +35,19 @@
 
   <header class="site-header">
     <div class="wrap flex items-center justify-between h-16">
-      <a href="/" class="flex items-center shrink-0" aria-label="Instagram Widget by Luck — início">
+      <a href="/en" class="flex items-center shrink-0" aria-label="Instagram Widget by Luck — home">
         <img src="/logo-dark.svg" alt="Instagram Widget by Luck" class="logo-on-light h-7 w-auto" />
         <img src="/logo-white.svg" alt="Instagram Widget by Luck" class="logo-on-dark h-7 w-auto" />
       </a>
       <div class="flex items-center gap-3">
         <!-- Language Switcher -->
-        <div class="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider mono text-ink-soft mr-1" aria-label="Selecione o idioma">
-          <span class="text-ocean font-bold" aria-current="page">PT</span>
+        <div class="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider mono text-ink-soft mr-1" aria-label="Select language">
+          <a href="/exclusao-confirmada" onclick="try{localStorage.setItem('lang', 'pt')}catch(e){}" class="hover:text-ocean transition-colors">PT</a>
           <span class="text-line opacity-40">|</span>
-          <a href="/en/deletion-confirmed" onclick="try{localStorage.setItem('lang', 'en')}catch(e){}" class="hover:text-ocean transition-colors">EN</a>
+          <span class="text-ocean font-bold" aria-current="page">EN</span>
         </div>
 
-        <button type="button" class="icon-btn" data-theme-toggle aria-label="Mudar tema">
+        <button type="button" class="icon-btn" data-theme-toggle aria-label="Change theme">
           <svg class="moon w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" /></svg>
           <svg class="sun w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
         </button>
@@ -60,21 +60,21 @@
       <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-7" style="background-color: oklch(var(--brand) / .14);">
         <svg class="w-8 h-8 text-ocean" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
       </div>
-      <h1 class="text-3xl font-extrabold tracking-tight">Solicitação recebida</h1>
+      <h1 class="text-3xl font-extrabold tracking-tight">Request received</h1>
       <p class="text-ink-soft leading-relaxed mt-3 mb-8">
-        Recebemos seu pedido de exclusão de dados. Confirmaremos por email em até 2 dias úteis e concluiremos a exclusão em até 30 dias.
+        We received your data deletion request. We will confirm by email within 2 business days and complete the deletion within 30 days.
       </p>
-      <a href="/" class="btn btn-ghost">← Voltar ao início</a>
+      <a href="/en" class="btn btn-ghost">← Back to home</a>
     </div>
   </main>
 
   <footer class="border-t border-line">
     <div class="wrap py-8 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-ink-mute">
       <!-- Language selector in footer -->
-      <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider mono text-ink-soft" aria-label="Idioma / Language">
-        <span class="text-ocean" aria-current="page">PT-BR</span>
+      <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider mono text-ink-soft" aria-label="Language / Idioma">
+        <a href="/exclusao-confirmada" onclick="try{localStorage.setItem('lang', 'pt')}catch(e){}" class="hover:text-ocean transition-colors">PT-BR</a>
         <span class="text-line opacity-40">·</span>
-        <a href="/en/deletion-confirmed" onclick="try{localStorage.setItem('lang', 'en')}catch(e){}" class="hover:text-ocean transition-colors">EN-US</a>
+        <span class="text-ocean" aria-current="page">EN-US</span>
       </div>
       <span>© 2026 Lucas Carvalho Serviços de Tecnologia · CNPJ 57.590.985/0001-70</span>
     </div>

@@ -14,8 +14,14 @@
   }
   function syncToggle(btn, dark) {
     if (!btn) return;
+    var lang = root.getAttribute("lang") || "pt-BR";
+    var isEn = lang.toLowerCase().indexOf("en") === 0;
     btn.setAttribute("aria-pressed", String(dark));
-    btn.setAttribute("aria-label", dark ? "Mudar para tema claro" : "Mudar para tema escuro");
+    if (isEn) {
+      btn.setAttribute("aria-label", dark ? "Switch to light theme" : "Switch to dark theme");
+    } else {
+      btn.setAttribute("aria-label", dark ? "Mudar para tema claro" : "Mudar para tema escuro");
+    }
   }
   var themeBtns = document.querySelectorAll("[data-theme-toggle]");
   themeBtns.forEach(function (btn) {
@@ -39,7 +45,13 @@
       open = state;
       menu.classList.toggle("hidden", !open);
       toggle.setAttribute("aria-expanded", String(open));
-      toggle.setAttribute("aria-label", open ? "Fechar menu" : "Abrir menu");
+      var lang = root.getAttribute("lang") || "pt-BR";
+      var isEn = lang.toLowerCase().indexOf("en") === 0;
+      if (isEn) {
+        toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+      } else {
+        toggle.setAttribute("aria-label", open ? "Fechar menu" : "Abrir menu");
+      }
       toggle.classList.toggle("is-open", open);
     };
     toggle.addEventListener("click", function () { setOpen(!open); });

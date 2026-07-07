@@ -7,7 +7,7 @@
   <title>Termos de Serviço — Instagram Widget by Luck</title>
   <meta name="description" content="Termos de uso do serviço Instagram Widget by Luck, operado pela Lucas Carvalho Serviços de Tecnologia." />
   <meta name="theme-color" content="#ffffff" />
-  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
   <script>
     (function () {
@@ -25,26 +25,33 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400..700&family=JetBrains+Mono:wght@400;500;600&display=swap"
     rel="stylesheet" />
-  <link rel="stylesheet" href="assets/theme.css" />
+  <link rel="stylesheet" href="/assets/theme.css" />
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="assets/tailwind.config.js"></script>
+  <script src="/assets/tailwind.config.js"></script>
 </head>
 
 <body>
 
   <header class="site-header">
     <div class="wrap flex items-center justify-between h-16">
-      <a href="index.html" class="flex items-center shrink-0" aria-label="Instagram Widget by Luck — início">
-        <img src="logo-dark.svg" alt="Instagram Widget by Luck" class="logo-on-light h-7 w-auto" />
-        <img src="logo-white.svg" alt="Instagram Widget by Luck" class="logo-on-dark h-7 w-auto" />
+      <a href="/" class="flex items-center shrink-0" aria-label="Instagram Widget by Luck — início">
+        <img src="/logo-dark.svg" alt="Instagram Widget by Luck" class="logo-on-light h-7 w-auto" />
+        <img src="/logo-white.svg" alt="Instagram Widget by Luck" class="logo-on-dark h-7 w-auto" />
       </a>
       <div class="flex items-center gap-3">
+        <!-- Language Switcher -->
+        <div class="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider mono text-ink-soft mr-1" aria-label="Selecione o idioma">
+          <span class="text-ocean font-bold" aria-current="page">PT</span>
+          <span class="text-line opacity-40">|</span>
+          <a href="/en/terms" onclick="try{localStorage.setItem('lang', 'en')}catch(e){}" class="hover:text-ocean transition-colors">EN</a>
+        </div>
+
         <button type="button" class="icon-btn" data-theme-toggle aria-label="Mudar tema">
           <svg class="moon w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" /></svg>
           <svg class="sun w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
         </button>
-        <a href="index.html" class="nav-link">← Voltar</a>
+        <a href="/" class="nav-link">← Voltar</a>
       </div>
     </div>
   </header>
@@ -131,18 +138,30 @@
 
   <footer class="border-t border-line">
     <div class="wrap py-10 flex flex-col md:flex-row items-center justify-between gap-6 text-sm">
-      <img src="logo-dark.svg" alt="Instagram Widget by Luck" class="logo-on-light h-6 w-auto" />
-      <img src="logo-white.svg" alt="Instagram Widget by Luck" class="logo-on-dark h-6 w-auto" />
-      <nav class="flex flex-col sm:flex-row items-center gap-3 sm:gap-6" aria-label="Links legais">
-        <a href="privacidade.html" class="nav-link">Política de Privacidade</a>
-        <a href="termos.html" class="nav-link">Termos de Serviço</a>
-        <a href="exclusao-de-dados.html" class="nav-link">Exclusão de Dados</a>
+      <div class="flex items-center gap-4 shrink-0">
+        <div class="flex items-center shrink-0">
+          <img src="/logo-dark.svg" alt="Instagram Widget by Luck" class="logo-on-light h-6 w-auto" />
+          <img src="/logo-white.svg" alt="Instagram Widget by Luck" class="logo-on-dark h-6 w-auto" />
+        </div>
+        <span class="text-line opacity-30">|</span>
+        <!-- Language selector in footer -->
+        <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider mono text-ink-soft whitespace-nowrap" aria-label="Idioma / Language">
+          <span class="text-ocean" aria-current="page">PT-BR</span>
+          <span class="text-line opacity-40">·</span>
+          <a href="/en/terms" onclick="try{localStorage.setItem('lang', 'en')}catch(e){}" class="hover:text-ocean transition-colors">EN-US</a>
+        </div>
+      </div>
+
+      <nav class="flex flex-col sm:flex-row items-center gap-3 sm:gap-6 whitespace-nowrap" aria-label="Links legais">
+        <a href="/privacidade" class="nav-link">Política de Privacidade</a>
+        <a href="/termos" class="nav-link">Termos de Serviço</a>
+        <a href="/exclusao-de-dados" class="nav-link">Exclusão de Dados</a>
       </nav>
       <span class="text-ink-mute text-center md:text-right">© 2026 Lucas Carvalho Serviços de Tecnologia · CNPJ 57.590.985/0001-70</span>
     </div>
   </footer>
 
-  <script src="assets/app.js"></script>
+  <script src="/assets/app.js"></script>
 </body>
 
 </html>
